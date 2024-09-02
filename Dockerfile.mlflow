@@ -1,0 +1,14 @@
+# ใช้ image ของ Python 3.9
+FROM python:3.9
+
+# ตั้ง working directory
+WORKDIR /app
+
+# ติดตั้ง MLflow
+RUN pip install mlflow
+
+# เปิดพอร์ตที่ MLflow ใช้งาน
+EXPOSE 5000
+
+# รัน MLflow UI
+CMD ["mlflow", "ui", "--host", "0.0.0.0", "--port", "5000"]
