@@ -1,0 +1,24 @@
+name: Build Docker Images
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker images
+        run: |
+          docker build -t my-gradio-app -f Dockerfile.gradio .
+          docker build -t my-mlflow-server -f Dockerfile.mlflow .
+          docker build -t my-prometheus -f Dockerfile.prometheus .
+          docker build -t my-grafana -f Dockerfile.grafana .
