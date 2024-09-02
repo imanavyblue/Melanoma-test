@@ -53,6 +53,6 @@ def train_model(train_dir, val_dir, epochs=10):
     )
 
 if __name__ == "__main__":
-    train_dir = 'data/train'
-    val_dir = 'data/val'
+    train_dir = 'train_data'
+    val_dir = 'validation_data'
     train_model(train_dir, val_dir)
