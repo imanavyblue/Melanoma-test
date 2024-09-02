@@ -32,5 +32,5 @@ def evaluate_model(model_path, data_dir):
 
 if __name__ == "__main__":
     model_path = 'model.h5'
-    data_dir = 'data/val'
+    data_dir = 'validation_data'
     evaluate_model(model_path, data_dir)
