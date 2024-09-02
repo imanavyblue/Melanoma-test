@@ -2,7 +2,7 @@ from keras.applications import InceptionV3
 from keras.models import Model
 from keras.layers import Input, Dense, GlobalAveragePooling2D
 import tensorflow as tf
-from src.data_preprocessing import preprocess_data
+from data_preprocessing import preprocess_data
 
 def create_model(input_shape=(224, 224, 3)):
     input_tensor = Input(shape=input_shape)
