@@ -4,4 +4,4 @@ global:
 scrape_configs:
   - job_name: 'gradio_app'
     static_configs:
-      - targets: ['localhost:8000']
+      - targets: ['gradio:8000']  # ใช้ชื่อ service ของ Gradio
