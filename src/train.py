@@ -39,19 +39,16 @@ def train_model(train_dir, val_dir, epochs=10):
         patience=3,
         restore_best_weights=True
     )
-    checkpoint = ModelCheckpoint(
-        'model.h5',
-        save_best_only=True
-    )
 
     # Train model
     history = model.fit(
         train_generator,
         epochs=epochs,
         validation_data=validation_generator,
-        callbacks=[early_stopping, checkpoint]
+        callbacks=[early_stopping]
     )
-
+    model.save("Inception_V3.h5")
+    
 if __name__ == "__main__":
     train_dir = 'train_data'
     val_dir = 'validation_data'
