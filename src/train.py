@@ -1,5 +1,5 @@
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.callbacks import EarlyStopping
 from model import create_model
 import tensorflow as tf
 
@@ -47,6 +47,8 @@ def train_model(train_dir, val_dir, epochs=10):
         validation_data=validation_generator,
         callbacks=[early_stopping]
     )
+
+    # Save model
     model.save("Inception_V3.h5")
     
 if __name__ == "__main__":
