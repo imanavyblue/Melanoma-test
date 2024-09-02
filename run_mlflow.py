@@ -4,8 +4,8 @@ import mlflow.keras
 from src.train import train_model
 
 def main():
-    train_dir = 'data/train'
-    val_dir = 'data/val'
+    train_dir = 'train_data'
+    val_dir = 'validation_data'
 
     os.makedirs('mlruns', exist_ok=True)
     mlflow.set_tracking_uri("file:./mlruns")
