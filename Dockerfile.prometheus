@@ -1,0 +1,8 @@
+# ใช้ image ของ Prometheus
+FROM prom/prometheus:latest
+
+# คัดลอกไฟล์ Prometheus configuration
+COPY prometheus.yml /etc/prometheus/prometheus.yml
+
+# เปิดพอร์ตที่ Prometheus ใช้งาน
+EXPOSE 9090
