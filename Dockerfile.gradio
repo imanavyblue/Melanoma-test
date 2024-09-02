@@ -1,0 +1,18 @@
+# ใช้ image ของ Python 3.9
+FROM python:3.9
+
+# ตั้ง working directory
+WORKDIR /app
+
+# คัดลอกไฟล์ requirements.txt และติดตั้ง dependencies
+COPY src/requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# คัดลอกไฟล์แอพพลิเคชัน
+COPY src/ .
+
+# เปิดพอร์ตที่ Gradio ใช้งาน
+EXPOSE 7860
+
+# รัน Gradio App
+CMD ["python", "gradio_app.py"]
