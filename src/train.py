@@ -1,35 +1,48 @@
 import numpy as np
 import os
 from PIL import Image
+from tensorflow.keras.applications import InceptionV3
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Flatten
-from tensorflow.keras.applications import VGG16
-from sklearn.model_selection import train_test_split
-import cv2
+from tensorflow.keras.optimizers import Adam
 
-# ฟังก์ชันสำหรับตรวจสอบและโหลดภาพด้วย OpenCV
-def load_image_cv(img_path):
-    image = cv2.imread(img_path)
-    if image is None:
-        print(f"Error loading image with OpenCV: {img_path}")
-    return image
-
-# ฟังก์ชันสำหรับตรวจสอบและโหลดภาพด้วย PIL
-def load_image_pil(img_path):
+# ฟังก์ชันสำหรับโหลดภาพและแปลงเป็น NumPy array
+def load_image(img_path, target_size=(299, 299)):
     try:
-        image = Image.open(img_path)
-        image.verify()  # ตรวจสอบว่าภาพเป็นไฟล์ที่ถูกต้อง
-        return Image.open(img_path)  # เปิดภาพใหม่
+        # ใช้ PIL เพื่อโหลดภาพ
+        with Image.open(img_path) as img:
+            img = img.resize(target_size)
+            img_array = np.array(img)
+            return img_array
     except Exception as e:
-        print(f"Error loading image with PIL: {img_path}: {e}")
+        print(f"Error loading image: {img_path}, {e}")
         return None
+
+# สร้างโมเดล InceptionV3
+base_model = InceptionV3(weights='imagenet', include_top=False)
+
+# เพิ่มเลเยอร์ของเราด้านบน
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+x = Dense(1024, activation='relu')(x)
+predictions = Dense(2, activation='softmax')(x)  # สมมติว่ามี 2 classes
+model = Model(inputs=base_model.input, outputs=predictions)
+
+# แช่แข็งเลเยอร์ของ InceptionV3 ไม่ให้ถูกฝึกสอนใหม่
+for layer in base_model.layers:
+    layer.trainable = False
+
+# คอมไพล์โมเดล
+model.compile(optimizer=Adam(learning_rate=0.0001),
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
 
 # กำหนดที่อยู่ของข้อมูล
 train_data_dir = 'train_data'
 validation_data_dir = 'validation_data'
 
-# การสร้าง ImageDataGenerator สำหรับการโหลดและการแปลงภาพ
+# สร้าง ImageDataGenerator สำหรับการโหลดและการแปลงภาพ
 train_datagen = ImageDataGenerator(
     rescale=1./255,
     validation_split=0.2  # ใช้การแบ่งข้อมูล
@@ -37,7 +50,7 @@ train_datagen = ImageDataGenerator(
 
 train_generator = train_datagen.flow_from_directory(
     train_data_dir,
-    target_size=(150, 150),
+    target_size=(299, 299),
     batch_size=32,
     class_mode='categorical',
     subset='training'
@@ -45,22 +58,11 @@ train_generator = train_datagen.flow_from_directory(
 
 validation_generator = train_datagen.flow_from_directory(
     train_data_dir,
-    target_size=(150, 150),
+    target_size=(299, 299),
     batch_size=32,
     class_mode='categorical',
     subset='validation'
 )
-
-# การสร้างโมเดล
-base_model = VGG16(weights='imagenet', include_top=False, input_shape=(150, 150, 3))
-model = Sequential([
-    base_model,
-    Flatten(),
-    Dense(256, activation='relu'),
-    Dense(2, activation='softmax')  # สมมุติว่ามี 2 คลาส
-])
-
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # การฝึกสอนโมเดล
 history = model.fit(
