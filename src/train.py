@@ -4,7 +4,7 @@ from tensorflow.keras.applications import InceptionV3
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
-from PIL import Image
+from PIL import Image, UnidentifiedImageError  # นำเข้า UnidentifiedImageError ด้วย
 
 # พาธไปยังโฟลเดอร์ที่เก็บภาพ
 train_data_dir = 'train_data'
