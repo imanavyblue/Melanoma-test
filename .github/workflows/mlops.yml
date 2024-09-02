@@ -13,6 +13,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set up Python path
+        run: echo "PYTHONPATH=$(pwd)/src" >> $GITHUB_ENV
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -30,7 +33,7 @@ jobs:
 
       - name: Upload model to MLflow
         run: |
-          python -c "import mlflow; mlflow.log_artifact('model.h5')"
+          python -c "import mlflow; mlflow.start_run(); mlflow.log_artifact('model.h5'); mlflow.end_run()"
 
       - name: Evaluate model
         run: |
