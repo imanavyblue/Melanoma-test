@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # เซิร์ฟเวอร์ MLflow
+  mlflow:
+    image: python:3.9
+    container_name: mlflow
+    command: >
+      sh -c "mlflow ui --host 0.0.0.0 --port 5000"
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_data:/mlflow
+    networks:
+      - mlops-network
+
+  # เซิร์ฟเวอร์ Gradio
+  gradio:
+    image: python:3.9
+    container_name: gradio
+    command: >
+      sh -c "python src/gradio_app.py"
+    ports:
+      - "7860:7860"
+    depends_on:
+      - mlflow
+    networks:
+      - mlops-network
+
+  # เซิร์ฟเวอร์ Prometheus
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_config:/etc/prometheus
+    networks:
+      - mlops-network
+
+  # เซิร์ฟเวอร์ Grafana
+  grafana:
+    image: grafana/grafana:9.4.6
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - mlops-network
+    depends_on:
+      - prometheus
+
+volumes:
+  mlflow_data:
+  prometheus_config:
+  grafana_data:
+
+networks:
+  mlops-network:
+    driver: bridge
