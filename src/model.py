@@ -22,4 +22,4 @@ def create_model(input_shape=(224, 224, 3)):
 
 if __name__ == "__main__":
     model = create_model()
-    model.summary()
+
