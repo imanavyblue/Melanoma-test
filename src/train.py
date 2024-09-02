@@ -2,9 +2,6 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from src.model import create_model
 import tensorflow as tf
-import sys
-
-
 
 def train_model(train_dir, val_dir, epochs=10):
     # Data augmentation and preparation
