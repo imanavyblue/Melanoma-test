@@ -4,83 +4,34 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'  # เลือกเวอร์ชันของ Python ตามที่ต้องการ
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        pip install optuna mlflow  # ติดตั้ง Optuna และ MLflow หากยังไม่ได้ติดตั้ง
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install optuna mlflow
 
-    - name: Run training
-      run: |
-        python src/train.py
+      - name: Run training
+        run: |
+          python src/train.py
 
-    - name: Run evaluation
-      run: |
-        python src/evaluate.py
+      - name: Upload model to MLflow
+        run: |
+          python -c "import mlflow; mlflow.log_artifact('model.h5')"
 
-    - name: Upload model artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: model
-        path: best_model.h5
-
-    - name: Run MLflow server
-      run: |
-        nohup mlflow ui --host 0.0.0.0 --port 5000 &
-
-    - name: Notify MLflow
-      run: |
-        # ตัวอย่างการส่งข้อมูลหรือการทำงานอื่นๆ กับ MLflow
-        curl -X POST -H "Content-Type: application/json" \
-          -d '{"model_name": "Inception_v3", "artifact_path": "Inception_v3.h5"}' \
-          http://localhost:5000/api/2.0/mlflow/track
-
-  deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        pip install gradio prometheus_client
-
-    - name: Run Gradio server
-      run: |
-        nohup python src/gradio_app.py &
-
-    - name: Run Prometheus server
-      run: |
-        nohup prometheus --config.file=prometheus.yml &
-
-    - name: Run Grafana server
-      run: |
-        nohup grafana-server --config=/etc/grafana/grafana.ini &
-
-    - name: Monitor services
-      run: |
-        curl -X GET http://localhost:8000/metrics
+      - name: Evaluate model
+        run: |
+          python src/evaluate.py
