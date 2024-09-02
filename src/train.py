@@ -1,9 +1,23 @@
+import os
+import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications import InceptionV3
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense, GlobalAveragePooling2D
+from tensorflow.keras.callbacks import EarlyStopping
 import tensorflow as tf
 
+# ฟังก์ชันตรวจสอบภาพ
+def load_image_with_imageio(img_path):
+    try:
+        import imageio
+        image = imageio.imread(img_path)
+        return image
+    except Exception as e:
+        print(f"Error loading image {img_path}: {e}")
+        return None
+
+# สร้างโมเดล
 input_shape = (224, 224, 3)
 
 input_tensor = Input(shape=input_shape)
@@ -22,8 +36,6 @@ model.compile(
 )
 
 model.summary()
-
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 # กำหนด EarlyStopping Callback
 early_stopping = EarlyStopping(
