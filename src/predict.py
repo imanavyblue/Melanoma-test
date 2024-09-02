@@ -7,7 +7,7 @@ from prometheus_client import start_http_server, Summary, Gauge
 import time
 
 # โหลดโมเดล InceptionV3
-model = tf.keras.models.load_model("Inception_V3.h5")
+model = tf.keras.models.load_model("model.h5")
 
 # สมมติว่ามีชื่อคลาสแบบกำหนดเอง
 class_names = ["Benign", "Malignant"]  # ปรับชื่อคลาสตามที่คุณฝึกโมเดล
