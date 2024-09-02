@@ -1,0 +1,5 @@
+# ใช้ image ของ Grafana
+FROM grafana/grafana:latest
+
+# เปิดพอร์ตที่ Grafana ใช้งาน
+EXPOSE 3000
