@@ -47,14 +47,14 @@ train_datagen = ImageDataGenerator(
 validation_datagen = ImageDataGenerator(rescale=1./255)
 
 train_generator = train_datagen.flow_from_directory(
-    'data/train',
+    'train_data',
     target_size=(224, 224),
     batch_size=32,
     class_mode='categorical'
 )
 
 validation_generator = validation_datagen.flow_from_directory(
-    'data/validation',
+    'validation_data',
     target_size=(224, 224),
     batch_size=32,
     class_mode='categorical'
